@@ -57,9 +57,9 @@ export function getOnlyLevelExportData(params) {
 
 // 对归类后的数据originalData 在内部对每一项进行方法调用
 //  titleKey 每一级的title  
-//  emptyFn 对每一项做清空属性前置的函数
-//  summaryCalcFn  对汇总后的group级进行处理的函数 
-//  itemCalcFn  对每一项的处理
+//  emptyFn 对每一项做清空属性前置的函数  summaryCalcFn(item)
+//  summaryCalcFn  对汇总后的group级进行处理的函数  summaryCalcFn(item,summaryData)  summaryData会自动在同组内堆叠调用
+//  itemCalcFn  对每一项的处理  itemCalcFn(item)  
 // params :  { originalData: any[], titleKey: string[], emptyFn: Function, summaryCalcFn: Function, itemCalcFn: Function }
 export function getSummaryList(originalData: any[], titleKey: string[], emptyFn: Function, summaryCalcFn: Function, itemCalcFn: Function ){
   const titleKey = params.titleKey
