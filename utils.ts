@@ -33,7 +33,8 @@ export function getLevelExportData(params) {
 }
 
 // 根据归类展开，展开成一维数组
-// allLevel 需要归多少级   levelKey 每一级归类的key
+// allLevel 需要归多少级 
+// levelKey 每一级归类的key
 // params : { originalData: any[], levelKey: string[], allLevel:number ,currentLevel?: number}
 export function getOnlyLevelExportData(params) {
   let currentLevel = params?.currentLevel || 0
@@ -54,3 +55,35 @@ export function getOnlyLevelExportData(params) {
   return newDataList
 }
 
+// 对归类后的数据originalData 在内部对每一项进行方法调用
+//  titleKey 每一级的title  
+//  emptyFn 对每一项做清空属性前置的函数
+//  summaryCalcFn  对汇总后的group级进行处理的函数 
+//  itemCalcFn  对每一项的处理
+// params :  { originalData: any[], titleKey: string[], emptyFn: Function, summaryCalcFn: Function, itemCalcFn: Function }
+export function getSummaryList(originalData: any[], titleKey: string[], emptyFn: Function, summaryCalcFn: Function, itemCalcFn: Function ){
+  const titleKey = params.titleKey
+  let summaryData:any = {}
+  const newArr = params.originalData.map((item: any) => {
+   if(item.groupLevel !== -1 && item.child){
+     item.exportTitle = item[titleKey[item.groupLevel]]
+     const loopParams = { originalData: item.child, titleKey, emptyFn: params.emptyFn, summaryCalcFn: params.summaryCalcFn, itemCalcFn: params.itemCalcFn }
+     const childRes = getSummaryList(loopParams)
+     item = params.emptyFn(item)
+     item = params.itemCalcFn(item)
+     item = {
+       ...item,
+       ...childRes.summaryData,
+       child: childRes.list
+     }
+    }else{
+     // 最后一级
+     const titleKeyLength = titleKey.length
+     item.exportTitle = item[titleKey[titleKeyLength - 1]]
+     item = params.itemCalcFn(item)
+   }
+    summaryData = params.summaryCalcFn(item, summaryData)
+    return item
+  })
+  return {list: newArr, summaryData}
+}
